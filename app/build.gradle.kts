@@ -13,7 +13,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,16 +27,12 @@ android {
     }
 
     compileOptions {
-        // You can bump to 17 later if your toolchain supports it
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
-    }
+    kotlinOptions { jvmTarget = "1.8" }
+
+    buildFeatures { viewBinding = true }
 }
 
 dependencies {
@@ -52,12 +47,14 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.3")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    // Navigation
+    // Navigation (ok to keep even if you don’t use NavController yet)
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 
-    // Lifecycle (optional but handy)
+    // Lifecycle helpers
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Tests
     testImplementation("junit:junit:4.13.2")
