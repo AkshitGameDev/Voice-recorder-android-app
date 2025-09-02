@@ -18,7 +18,7 @@ import java.util.Locale
 
 const val REQUEST_CODE = 200
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
 
     private val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
     private var permissionGranted = false
@@ -31,8 +31,12 @@ class MainActivity : AppCompatActivity() {
 
     private var dirPath = ""
     private var filename = ""
+    private lateinit var timer: Timer
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        timer = Timer(this)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -91,19 +95,16 @@ class MainActivity : AppCompatActivity() {
             setOutputFile("$dirPath$filename.m4a")
             try {
                 prepare()
-                start()
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-                return
-            }
+            } catch (e: IOException) {}
+
+            start()
         }
 
         btnRecord.setImageResource(R.drawable.ic_pause)
         isRecording = true
         isPaused = false
+
+        timer.start()
     }
 
     private fun pauseRecorder() {
@@ -113,6 +114,7 @@ class MainActivity : AppCompatActivity() {
                 recorder?.pause()
                 isPaused = true
                 btnRecord.setImageResource(R.drawable.ic_record)
+                timer.pause()
             } catch (_: IllegalStateException) { }
         }
     }
@@ -123,8 +125,12 @@ class MainActivity : AppCompatActivity() {
                 recorder?.resume()
                 isPaused = false
                 btnRecord.setImageResource(R.drawable.ic_pause)
+                timer.start()
             } catch (_: IllegalStateException) { }
         }
+    }
+    private fun stopRecording(){
+        timer.stop()
     }
 
     private fun stopAndRelease() {
@@ -134,6 +140,7 @@ class MainActivity : AppCompatActivity() {
                 reset()
                 release()
             }
+            timer
         } catch (_: Exception) { }
         recorder = null
         isRecording = false
@@ -148,5 +155,9 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (recorder != null) stopAndRelease()
+    }
+
+    override fun onTimerTick(duration: String) {
+        println(duration)
     }
 }
