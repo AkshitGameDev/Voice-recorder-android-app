@@ -2,6 +2,7 @@ package com.example.audiorecorder
 
 import android.os.Handler
 import android.os.Looper
+import kotlin.time.Duration.Companion.minutes
 
 class Timer(listner: onTimerTickListner) {
     interface onTimerTickListner{
@@ -18,7 +19,7 @@ class Timer(listner: onTimerTickListner) {
         runnable = kotlinx.coroutines.Runnable {
             duration +=delay
             handler.postDelayed(runnable, delay)
-            listner.onTimerTick(duration.toString())
+            listner.onTimerTick(format())
         }
     }
 
@@ -32,6 +33,20 @@ class Timer(listner: onTimerTickListner) {
      fun stop(){
         handler.removeCallbacks(runnable)
         duration = 0L
+    }
+
+    fun format(): String{
+        val millis: Long = duration % 1000
+        val secons: Long = (duration / 1000) % 60
+        val minutes: Long = (duration / (1000 * 60)) % 60
+        val hours: Long = (duration / (1000 * 60 * 60)) % 60
+
+        var formatted: String = if(hours > 0)
+            "%02d:%02d:%02d.%02d".format(hours,minutes,secons,millis/10)
+        else
+            "%02d:%02d.%02d".format(minutes,secons,millis/10)
+
+        return formatted
     }
 
 

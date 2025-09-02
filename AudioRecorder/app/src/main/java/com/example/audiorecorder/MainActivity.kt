@@ -1,11 +1,15 @@
 package com.example.audiorecorder
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
 
     private var recorder: MediaRecorder? = null
     private lateinit var btnRecord: ImageButton
+    private lateinit var tvText: TextView
+    private lateinit var viabrator: Vibrator
 
     private var isRecording = false
     private var isPaused = false
@@ -36,6 +42,7 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         timer = Timer(this)
+        viabrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -48,6 +55,7 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
         }
 
         btnRecord = findViewById(R.id.btnRecord)
+        tvText = findViewById(R.id.tvTimer)
 
         permissionGranted = ActivityCompat.checkSelfPermission(this, permissions[0]) ==
                 PackageManager.PERMISSION_GRANTED
@@ -61,7 +69,9 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
                 isRecording -> pauseRecorder()
                 else -> startRecording()
             }
+            viabrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -158,6 +168,7 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
     }
 
     override fun onTimerTick(duration: String) {
-        println(duration)
+        tvText.text = duration;
+
     }
 }
