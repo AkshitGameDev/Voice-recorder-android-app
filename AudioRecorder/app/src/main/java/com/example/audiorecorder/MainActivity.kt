@@ -169,6 +169,8 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
 
     override fun onTimerTick(duration: String) {
         tvText.text = duration;
+        val amp = recorder?.maxAmplitude ?: 0
+       findViewById<WaveFormView>(R.id.waveFormView).addAptitude(amp.toFloat())
 
     }
 }
