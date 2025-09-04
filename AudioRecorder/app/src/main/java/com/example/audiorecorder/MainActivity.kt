@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -17,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -46,6 +51,15 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
     private var dirPath = ""
     private var filename = ""
     private lateinit var timer: Timer
+    private lateinit var bottomSheetBehaviour: BottomSheetBehavior<LinearLayout>
+    private var bottomSheet = findViewById<LinearLayout>(R.id.bottomSheet)
+    private var bottomSheetBG = findViewById<View>(R.id.bottomSheetBG)
+
+    private var fileNameInput = findViewById<TextInputEditText>(R.id.fileNameInput)
+
+    private var btnCancle = findViewById<MaterialButton>(R.id.buttonCancle)
+    private var btnOk = findViewById<MaterialButton>(R.id.btnOk)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -61,6 +75,10 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
             v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
             insets
         }
+
+        bottomSheetBehaviour = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehaviour.peekHeight = 0
+        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
 
         btnRecord = findViewById(R.id.btnRecord)
         btnList = findViewById(R.id.btnList)
@@ -91,7 +109,26 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
         btnDone.setOnClickListener {
             Toast.makeText(this,"Record Saved", Toast.LENGTH_SHORT).show()
             stopRecording()
+
+            bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            bottomSheetBG.visibility = View.VISIBLE
+            hideKeyboard(fileNameInput)
+
+
         }
+
+        btnCancle.setOnClickListener {
+            File("$dirPath$filename.mp3").delete()
+            dismiss()
+        }
+
+        btnOk.setOnClickListener {
+
+
+            dismiss()
+            save()
+        }
+
         btnDelete.setOnClickListener{
             Toast.makeText(this,"Record Deleated", Toast.LENGTH_SHORT).show()
             stopRecording()
@@ -100,6 +137,24 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
 
 
         btnDelete.isClickable = false
+    }
+
+    private fun save(){
+        val newFileName = fileNameInput.text.toString()
+        if(newFileName != filename){
+            //todo
+        }
+    }
+
+    private fun dismiss(){
+        bottomSheetBG.visibility = View.GONE
+        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+
+    }
+
+    private fun hideKeyboard(view: View){
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onRequestPermissionsResult(
