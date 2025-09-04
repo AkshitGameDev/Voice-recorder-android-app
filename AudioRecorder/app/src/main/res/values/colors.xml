@@ -11,4 +11,5 @@
 
 
     <color name="textColor">#282828</color>
+    <color name="strokColor">#1E88E5</color>
 </resources>

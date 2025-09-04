@@ -8,13 +8,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,6 +32,11 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
 
     private var recorder: MediaRecorder? = null
     private lateinit var btnRecord: ImageButton
+    private lateinit var btnList: ImageButton
+    private lateinit var btnDone: ImageButton
+    private lateinit var btnDelete: ImageButton
+
+
     private lateinit var tvText: TextView
     private lateinit var viabrator: Vibrator
 
@@ -55,6 +63,10 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
         }
 
         btnRecord = findViewById(R.id.btnRecord)
+        btnList = findViewById(R.id.btnList)
+        btnDone = findViewById(R.id.btnDone)
+        btnDelete = findViewById(R.id.btnDelete)
+
         tvText = findViewById(R.id.tvTimer)
 
         permissionGranted = ActivityCompat.checkSelfPermission(this, permissions[0]) ==
@@ -72,6 +84,22 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
             viabrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
         }
 
+        btnList.setOnClickListener{
+            Toast.makeText(this,"List button", Toast.LENGTH_SHORT).show()
+            //TODO
+        }
+        btnDone.setOnClickListener {
+            Toast.makeText(this,"Record Saved", Toast.LENGTH_SHORT).show()
+            stopRecording()
+        }
+        btnDelete.setOnClickListener{
+            Toast.makeText(this,"Record Deleated", Toast.LENGTH_SHORT).show()
+            stopRecording()
+            File("$dirPath$filename.mp3")
+        }
+
+
+        btnDelete.isClickable = false
     }
 
     override fun onRequestPermissionsResult(
@@ -115,6 +143,12 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
         isPaused = false
 
         timer.start()
+
+
+        btnDelete.isClickable = true
+        btnDelete.setImageResource(R.drawable.ic_delete)
+        btnList.visibility =View.GONE
+        btnDone.visibility = View.VISIBLE
     }
 
     private fun pauseRecorder() {
@@ -141,6 +175,24 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
     }
     private fun stopRecording(){
         timer.stop()
+
+        recorder?.apply {
+            stop()
+            release()
+        }
+        isPaused = false
+        isRecording = false
+
+        btnList.visibility = View.VISIBLE
+        btnDone.visibility = View.GONE
+
+        btnDelete.isClickable = false
+        btnDelete.setImageResource(R.drawable.ic_delete)
+
+        btnRecord.setImageResource(R.drawable.ic_record)
+
+        tvText.text = "00:00.00"
+
     }
 
     private fun stopAndRelease() {
@@ -173,4 +225,6 @@ class MainActivity : AppCompatActivity(), Timer.onTimerTickListner {
        findViewById<WaveFormView>(R.id.waveFormView).addAptitude(amp.toFloat())
 
     }
+
+
 }
