@@ -7,6 +7,8 @@ android {
     namespace = "com.example.audiorecorder"
     compileSdk = 34
 
+
+
     defaultConfig {
         applicationId = "com.example.audiorecorder"
         minSdk = 28
